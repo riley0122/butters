@@ -24,6 +24,8 @@ Butters do file.btrs
 
 # Structure
 
+[view guide](https://github.com/lucasammer/butters/blob/main/guides/guide.btrs)
+
 All butters programs are structured in sections.
 Not all sections are always used.
 All possible sections are:
