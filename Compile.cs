@@ -22,6 +22,7 @@ namespace butters
             STRING_arr = 6,
             VOID = 7,
             NULL = 8,
+            VAR = 2,
         }
 
         public string name { get; set; } = "[Butters] Default Variable Name";
@@ -224,11 +225,13 @@ namespace butters
                                 vars.Add(i_);
                             break;
                             case "string":
+                            case "var":
                                 VAR s = new VAR();
                                 s.name = split[1];
                                 s.type = VAR.VarType.STRING;
                                 List<string> sL = new List<string>(split);
                                 sL.Remove("string");
+                                sL.Remove("var");
                                 sL.Remove(s.name);
                                 s.value = string.Join(" ", sL);
                                 vars.Add(s);
