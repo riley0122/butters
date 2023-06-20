@@ -1,0 +1,52 @@
+#section META
+*author [author name]
+*project [project name]
+*version [version]
+*license [license]
+
+#section STATIC
+import [static file(code will be run and variables and functions will be exported to dll)]
+
+#section DYNAMIC
+import [dynamic file(code will be run every time for the functions and variables)]
+
+#section DEFINE
+float [number]
+int [number]
+string [string]
+bool [bool]
+.float [number list]
+.int [number list]
+.string [string list]
+
+void [name]
+$ [thing to do]
+% (ends void)
+
+#section CODE
+while [condition(i.e. i < 4)]
+$ [thing to do]
+$ [more things to do]
+% (ends loop)
+
+for [condition(i.e. i < 4)]
+$ [do something]
+^[variable name] (increases variable)
+% (ends loop)
+
+cvar [variable name] / [new value] (redefining variable)
+
+--comment
+-% (long comment start)
+comment
+continues
+%- (long comment end)
+
+input [string var with text] [output variable] (setting variable to input)
+
+$out [string var with text] (writes to stdout)
+%
+
+if [condition]
+$ [do the thing]
+%

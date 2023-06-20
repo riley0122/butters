@@ -1,0 +1,52 @@
+{
+    "meta": {
+        "author": "LucasAmmer",
+        "project": "example",
+        "version": "1.0.0",
+        "license": "MIT"
+    },
+    "static": [],
+    "dynamic": [],
+    "define": [
+        {"name": "first", "value": "0", "type": "int"},
+        {"name": "second", "value": "1", "type": "int"},
+        {"name": "count", "value": "0", "type": "int"},
+        {"name": "reps", "value": "10", "type": "int"},
+        {"name": "nth", "value": "0", "type": "int"},
+        ],     
+    "code":[
+        {
+            "origin": "for",
+            "instruction": "while",
+            "condition": "![condition]",
+            "runs": [
+                {
+                    "instruction": "out",
+                    "text": "=first"
+                },
+                {
+                    "origin": "nth /",
+                    "instruction": "redef",
+                    "var":"nth",
+                    "value": "=first + =second"
+                },
+                {
+                    "origin": "first /",
+                    "instruction": "redef",
+                    "var":"first",
+                    "value": "=second"
+                },
+                {
+                    "origin": "second /",
+                    "instruction": "redef",
+                    "var":"second",
+                    "value": "=nth"
+                },
+                {
+                    "origin": "^count",
+                    "instruction": "incvar",
+                    "var": "count"
+                }
+            ]
+        }]
+}

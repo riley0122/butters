@@ -1,0 +1,4 @@
+cvar x something
+if want var then do the thing
+cvar x 1 + _[variable]
+has to be seperated by a space

@@ -1,0 +1,23 @@
+#section META
+*author LucasAmmer
+*project example
+*version 1.0.0
+*license MIT
+
+-- No imports used
+
+#section DEFINE
+int first 0
+int second 1
+int count 0
+int reps 10
+int nth 0
+
+#section CODE
+for count < reps
+$ out first
+$ cvar nth / first + second
+$ cvar first / second
+$ cvar second / nth
+^count
+%
