@@ -8,6 +8,7 @@ namespace butters
         public static bool building = false;
         public static int warp_delay = 100;
         public static bool timed = false;
+        public static bool quiet = false;
         static Stopwatch stopwatch = new Stopwatch();
 
         public static void log(string msg){
@@ -27,6 +28,7 @@ namespace butters
             if(args.Contains("--b")){ building = true; verbose = true; }
             if(args.Contains("-v")){ verbose = true; }
             if(args.Contains("-t")){ timed = true; }
+            if(args.Contains("-q")){ quiet = true; verbose = false; }
             if(args.Contains("--warp-delay")){
                 int delayIndex = Array.IndexOf(args, "--warp-delay") + 1;
                 try

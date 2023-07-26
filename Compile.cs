@@ -132,6 +132,9 @@ namespace butters
                     c.origin = "warp";
                     c.value = split[1];
                     c.instruction = "jump";
+                    if(Program.quiet){
+                        return c;
+                    }
                     if(Program.warp_delay > 0){
                         Console.ForegroundColor = ConsoleColor.DarkGray;
                         Console.WriteLine("[Compile.cs/codeSwitch] (compiler notice) You are using a warp with a warp delay of " + Program.warp_delay + ".");

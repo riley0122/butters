@@ -60,13 +60,21 @@ namespace butters{
             }
         }
 
+
+        static List<string> pins = new List<string>();
+        static code_block[] top_level_code;
+        static bool istop = true;
+
         private void runcode(code_block[] code, bool warping = false)
         {
+            if(istop){
+                istop = false;
+                top_level_code = code;
+            }
             bool skipnextWarp = false;
             string str;
             string[] strs;
             string expression;
-            List<string> pins = new List<string>();
             foreach (code_block block in code)
             {
                 if(warping){
@@ -138,21 +146,25 @@ namespace butters{
                         {
                             pinstring += pin + ", ";
                         }
-                        Program.log("all current pins: [" +  pinstring + "]");
+                        Program.log("[runtime.cs/runcode] all current pins: [" +  pinstring + "]");
                     break;
                     case "jump":
+                        if(skipnextWarp){
+                            continue;
+                        }
                         if(!pins.Contains(block.value.Trim())){
                             throw new InvalidWarpException("warp does not exist!", new InvalidTokenException(block.value));
                         }
                         bool passed = false;
                         List<code_block> temp_code = new List<code_block>();
-                        foreach(code_block b in code){
+                        foreach(code_block b in top_level_code){
                             if(b.instruction == "pin" && b.value == block.value){
                                 passed = true;
                                 Program.log("[runtime.cs/runcode] passed pin " + b.value);
                             }
                             if(passed){
                                 temp_code.Add(b);
+                                Program.log("[runtime.cs/runcode] added code block with instruction ("  + b.instruction + ") to pin " + block.value);
                             }else{
                                 Program.log("[runtime.cs/runcode] searching pin " + b.value + "...");
                             }
@@ -205,9 +217,13 @@ namespace butters{
 
         static bool EvaluateBooleanExpression(string expression)
         {
+            Program.log("[runtime.cs/EvaluateBooleanExpression] evaluating: " + expression);
+
             var dataTable = new System.Data.DataTable();
 
             var result = dataTable.Compute(expression, "");
+
+            Program.log("[runtime.cs/EvaluateBooleanExpression] evalution result: " + result.ToString());
 
             return result is bool && (bool)result == true;
         }
