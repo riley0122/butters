@@ -81,7 +81,7 @@ namespace butters
                     c.var = split[1];
                     c.output = split[2];
                     return c;
-                case "cvar": 
+                case "cvar":
                     c.origin = "cvar";
                     c.instruction = "redef";
                     c.var = split[1];

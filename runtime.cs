@@ -179,7 +179,13 @@ namespace butters{
                         for (int i = 0; i < strs.Length; i++)
                         {
                             if(strs[i].Substring(0, 1) == "_"){
-                                strs[i] = getVar(strs[i].Replace("_", ""));
+                                string varname = strs[i].Substring(1, strs[i].Length - 1);
+                                if(getRawVar(varname).type == VAR.VarType.STRING){
+                                    strs[i] = "'" + getVar(varname) + "'";
+                                }else{
+                                    strs[i] = getVar(varname);
+                                }
+
                             }
                         }
                         expression = string.Join(" ", strs);
@@ -201,6 +207,13 @@ namespace butters{
                 throw new InvalidVariableException(name);
             }
             return vars.FirstOrDefault(x => x.name == name).value.ToString();
+        }
+
+        private VAR getRawVar(string name){
+            if(!isVar(name)){
+                throw new InvalidVariableException(name);
+            }
+            return vars.FirstOrDefault(var => var.name == name);
         }
 
         private bool isVar(string name){
