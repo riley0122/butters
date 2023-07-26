@@ -62,12 +62,12 @@ namespace butters{
 
         private void runcode(code_block[] code, bool warping = false)
         {
+            bool skipnextWarp = false;
             string str;
             string[] strs;
             string expression;
             List<string> pins = new List<string>();
-            code_block[] reading = code;
-            foreach (code_block block in reading)
+            foreach (code_block block in code)
             {
                 if(warping){
                     System.Threading.Thread.Sleep(Program.warp_delay);
@@ -129,10 +129,19 @@ namespace butters{
                         }
                     break;
                     case "pin":
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                        Program.log("[runtime.cs/runcode] found warp point " + block.value);
+                        Console.ForegroundColor = ConsoleColor.White;
                         pins.Add(block.value);
+                        string pinstring = "";
+                        foreach (string pin in pins)
+                        {
+                            pinstring += pin + ", ";
+                        }
+                        Program.log("all current pins: [" +  pinstring + "]");
                     break;
                     case "jump":
-                        if(!pins.Contains(block.value)){
+                        if(!pins.Contains(block.value.Trim())){
                             throw new InvalidWarpException("warp does not exist!", new InvalidTokenException(block.value));
                         }
                         bool passed = false;
@@ -151,6 +160,7 @@ namespace butters{
                         runcode(temp_code.ToArray(), true);
                     break;
                     case "return":
+                        skipnextWarp = true;
                         return;
                     case "if":
                         strs = block.condition.Split(" ");

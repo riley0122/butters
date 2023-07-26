@@ -123,6 +123,9 @@ namespace butters
                 case "location":
                     c.origin = "location";
                     c.value = split[1];
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Program.log("[Compile.cs/codeswitch] found warp point " + split[1]);
+                    Console.ForegroundColor = ConsoleColor.White;
                     c.instruction = "pin";
                     return c;
                 case "warp":
