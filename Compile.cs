@@ -122,8 +122,8 @@ namespace butters
                     return c;
                 case "$":
                     List<string> newSplit = new List<string>(split);
-                    newSplit.Remove("$");
-                    c = codeSwitch(newSplit.ToArray(), newSplit[0]);
+                    newSplit.RemoveAt(0);
+                    c = codeSwitch(newSplit.ToArray(), newSplit[0], line);
                     if(inloop){
                         try
                         {
@@ -153,7 +153,7 @@ namespace butters
                 case "%":
                     inloop = false;
                     loopObj = new code_block();
-                    dontadd = true;
+                    dontadd = false;
                 break;
                 default:
                     throw new CompileException("Invalid instruction!", new InvalidTokenException(action, new ButtersException("in line : " + (line + 2).ToString())));
