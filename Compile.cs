@@ -109,6 +109,17 @@ namespace butters
                     c.runs = new List<code_block>();
                     loopObj = c;
                     return c;
+                case "else":
+                    if(!inloop){
+                        throw new CompileException("else cannot be used without if!");
+                    }
+                    string[] elseSplit = loopObj.condition.Split(" ");
+                    List<string> elseCond = new List<string>(elseSplit);
+                    c.instruction = "if";
+                    c.condition = "not " + string.Join(" ", elseCond);
+                    c.runs = new List<code_block>();
+                    loopObj = c;
+                    return c;
                 case "$":
                     List<string> newSplit = new List<string>(split);
                     newSplit.Remove("$");
