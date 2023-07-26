@@ -147,8 +147,7 @@ namespace butters{
 
         private string getVar(string name){
             if(!isVar(name)){
-                Console.WriteLine("Not a variable!(" + name + ")");
-                return "";
+                throw new InvalidVariableException(name);
             }
             return vars.FirstOrDefault(x => x.name == name).value.ToString();
         }
@@ -159,8 +158,7 @@ namespace butters{
 
         private void setVar(dynamic val, string name){
             if(!isVar(name)){
-                Console.WriteLine("Not a variable! (" + name + ")");
-                return;
+                throw new InvalidVariableException(name);
             }
             vars.FirstOrDefault(x => x.name == name).value = val;
             return;

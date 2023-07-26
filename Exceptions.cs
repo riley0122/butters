@@ -42,4 +42,15 @@ namespace butters{
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
+
+    [System.Serializable]
+    public class InvalidVariableException : ButtersException
+    {
+        public InvalidVariableException() { }
+        public InvalidVariableException(string message) : base(message) { }
+        public InvalidVariableException(string message, System.Exception inner) : base(message, inner) { }
+        protected InvalidVariableException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+    }
 }
