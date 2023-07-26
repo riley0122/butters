@@ -6,6 +6,7 @@ namespace butters
     {
         public static bool verbose = false;
         public static bool building = false;
+        public static int warp_delay = 100;
         public static bool timed = false;
         static Stopwatch stopwatch = new Stopwatch();
 
@@ -26,6 +27,19 @@ namespace butters
             if(args.Contains("--b")){ building = true; verbose = true; }
             if(args.Contains("-v")){ verbose = true; }
             if(args.Contains("-t")){ timed = true; }
+            if(args.Contains("--warp-delay")){
+                int delayIndex = Array.IndexOf(args, "--warp-delay") + 1;
+                try
+                {
+                    if(!int.TryParse(args[delayIndex], System.Globalization.NumberStyles.Integer, null ,out warp_delay)){
+                        throw new ButtersException("couldn't set warp delay for unknown reasons");
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    throw new ButtersException("couldn't set warp delay", e);
+                }
+            }
 
             Compile compiler = new Compile();
             Console.ForegroundColor = ConsoleColor.DarkGray;

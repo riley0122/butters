@@ -60,13 +60,18 @@ namespace butters{
             }
         }
 
-        private void runcode(code_block[] code)
+        private void runcode(code_block[] code, bool warping = false)
         {
             string str;
             string[] strs;
             string expression;
-            foreach (code_block block in code)
+            List<string> pins = new List<string>();
+            code_block[] reading = code;
+            foreach (code_block block in reading)
             {
+                if(warping){
+                    System.Threading.Thread.Sleep(Program.warp_delay);
+                }
                 switch(block.instruction){
                     case "out":
                         str = getVar(block.var);
@@ -122,6 +127,28 @@ namespace butters{
                             }
                            expression = string.Join("", strs);
                         }
+                    break;
+                    case "pin":
+                        pins.Add(block.value);
+                    break;
+                    case "jump":
+                        if(!pins.Contains(block.value)){
+                            throw new InvalidWarpException("warp does not exist!", new InvalidTokenException(block.value));
+                        }
+                        bool passed = false;
+                        List<code_block> temp_code = new List<code_block>();
+                        foreach(code_block b in code){
+                            if(b.instruction == "pin" && b.value == block.value){
+                                passed = true;
+                                Program.log("[runtime.cs/runcode] passed pin " + b.value);
+                            }
+                            if(passed){
+                                temp_code.Add(b);
+                            }else{
+                                Program.log("[runtime.cs/runcode] searching pin " + b.value + "...");
+                            }
+                        }
+                        runcode(temp_code.ToArray(), true);
                     break;
                     case "if":
                         strs = block.condition.Split(" ");

@@ -53,4 +53,15 @@ namespace butters{
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
+
+    [System.Serializable]
+    public class InvalidWarpException : ButtersException
+    {
+        public InvalidWarpException() { }
+        public InvalidWarpException(string message) : base(message) { }
+        public InvalidWarpException(string message, System.Exception inner) : base(message, inner) { }
+        protected InvalidWarpException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+    }
 }

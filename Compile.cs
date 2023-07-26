@@ -129,6 +129,19 @@ namespace butters
                     c.origin = "warp";
                     c.value = split[1];
                     c.instruction = "jump";
+                    if(Program.warp_delay > 0){
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.WriteLine("[Compile.cs/codeSwitch] (compiler notice) You are using a warp with a warp delay of " + Program.warp_delay + ".");
+                        Console.WriteLine("[Compile.cs/codeSwitch] (compiler notice) To alter warp delay use the arguement --warp-delay [time(ms)]");
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }else{
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.WriteLine("[Compile.cs/codeSwitch] (compiler warning) You are using a warp with a warp delay of " + Program.warp_delay + ".");
+                        Console.WriteLine("[Compile.cs/codeSwitch] (compiler warning) This delay is very low. so you might get a cpu usage spike and/or a stack overflow warning.");
+                        Console.WriteLine("[Compile.cs/codeSwitch] (compiler warning) Continuing in 3000ms");
+                        Thread.Sleep(3000);
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
                     return c;
                 case "$":
                     List<string> newSplit = new List<string>(split);
