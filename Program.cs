@@ -11,7 +11,13 @@ namespace butters
 
         public static void log(string msg){
             if(verbose){
+                if(msg.StartsWith("[runtime.cs")){
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                }
                 Console.WriteLine(msg);
+                if(msg.StartsWith("[runtime.cs")){
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
             }
         }
 
@@ -63,9 +69,7 @@ namespace butters
                     }
                     catch (System.Exception e)
                     {
-                        Console.WriteLine("Something went wrong wile running");
-                        log(e.ToString());
-                        throw;
+                        throw new RuntimeException("Something went wrong whilst running!", e);
                     }
 
                     if (timed){
