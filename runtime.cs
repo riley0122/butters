@@ -91,7 +91,7 @@ namespace butters{
                                     strs[i] = " ";
                                 }
                             }
-                            str = string.Join("", strs);
+                            str = string.Join(" ", strs);
                             bool isValidExpression = Regex.IsMatch(str, @"^\s*\d+(\s*[-+\/*]\s*\d+)*\s*$");
                             if(isValidExpression){
                                 var dataTable = new DataTable();
@@ -132,6 +132,7 @@ namespace butters{
                             }
                         }
                         expression = string.Join(" ", strs);
+                        Program.log("[runtime.cs/runcode] evaluating: " + expression);
                         if (EvaluateBooleanExpression(expression))
                         {
                             runcode(block.runs.ToArray());
