@@ -143,6 +143,9 @@ namespace butters
                         Console.ForegroundColor = ConsoleColor.White;
                     }
                     return c;
+                case "return":
+                    c.instruction = "return";
+                    return c;
                 case "$":
                     List<string> newSplit = new List<string>(split);
                     newSplit.RemoveAt(0);

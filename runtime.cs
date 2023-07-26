@@ -150,6 +150,8 @@ namespace butters{
                         }
                         runcode(temp_code.ToArray(), true);
                     break;
+                    case "return":
+                        return;
                     case "if":
                         strs = block.condition.Split(" ");
                         for (int i = 0; i < strs.Length; i++)
