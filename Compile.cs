@@ -67,7 +67,7 @@ namespace butters
         public code_block loopObj = new code_block();
         public bool inloop = false;
         bool dontadd = false;
-        public code_block codeSwitch(string[] split, string action){
+        public code_block codeSwitch(string[] split, string action, int line = -1){
             code_block c = new code_block();
             dontadd = false;
             switch (action)
@@ -117,7 +117,7 @@ namespace butters
                         try
                         {
                             if(loopObj is null) { 
-                                throw new Exception("<internal> [Compile.cs/codeSwitch] loopObj is null!");
+                                throw new CompileException("<internal> [Compile.cs/codeSwitch] loopObj is null!");
                             }
                             loopObj.runs.Add(c);
                             dontadd = true;
@@ -136,7 +136,7 @@ namespace butters
                         
                     }else{
                         Console.WriteLine(c.instruction);
-                        throw new Exception("Not in loop!");
+                        throw new CompileException("Not in loop!");
                     }
                     
                 case "%":
@@ -144,6 +144,8 @@ namespace butters
                     loopObj = new code_block();
                     dontadd = true;
                 break;
+                default:
+                    throw new CompileException("Invalid instruction!", new InvalidTokenException(action, new ButtersException("in line : " + (line + 2).ToString())));
             }
             return c;
         }
@@ -261,12 +263,30 @@ namespace butters
                         {
                             continue;
                         }
-                        code_block c = codeSwitch(split, action);
+                        code_block c = codeSwitch(split, action, i);
                         
                         if(!dontadd){
                             code.Add(c);
                         }
-                        
+
+                    break;
+                    case (SECTION)1:
+                        bool it = split[1] == "DYNAMIC";
+                        if(action == "#section"){
+                            continue;
+                        }
+                        if(action != "import"){
+                            throw new CompileException("invalid action for section: " + action);
+                        }
+                        if(!File.Exists(split[1] + ".btrs")){
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("make sure DYNAMIC imports are existing files ending with .btrs in the filename but just the filename without extension in code");
+                            Console.WriteLine("make sure STATIC imports are existing files ending with .dll in the filename but just the filename without extension in code");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            throw new CompileException("Import does not exist!");
+                        }
+                        Console.WriteLine(it);
+                        Console.WriteLine(File.Exists(split[1] + (it ? ".btrs" : ".dll")));
                     break;
                 }
             }

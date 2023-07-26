@@ -139,7 +139,7 @@ namespace butters{
                         }
                     break;
                     default:
-                        throw new Exception("not a valid instruction!");
+                        throw new InvalidTokenException(block.instruction, new ButtersException("invalid token"));
                 }
             }
         }
