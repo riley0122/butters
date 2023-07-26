@@ -6,12 +6,20 @@ namespace butters
     {
         public static bool verbose = false;
         public static bool building = false;
+        public static int warp_delay = 100;
         public static bool timed = false;
+        public static bool quiet = false;
         static Stopwatch stopwatch = new Stopwatch();
 
         public static void log(string msg){
             if(verbose){
+                if(msg.StartsWith("[runtime.cs")){
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                }
                 Console.WriteLine(msg);
+                if(msg.StartsWith("[runtime.cs")){
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
             }
         }
 
@@ -20,6 +28,20 @@ namespace butters
             if(args.Contains("--b")){ building = true; verbose = true; }
             if(args.Contains("-v")){ verbose = true; }
             if(args.Contains("-t")){ timed = true; }
+            if(args.Contains("-q")){ quiet = true; verbose = false; }
+            if(args.Contains("--warp-delay")){
+                int delayIndex = Array.IndexOf(args, "--warp-delay") + 1;
+                try
+                {
+                    if(!int.TryParse(args[delayIndex], System.Globalization.NumberStyles.Integer, null ,out warp_delay)){
+                        throw new ButtersException("couldn't set warp delay for unknown reasons");
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    throw new ButtersException("couldn't set warp delay", e);
+                }
+            }
 
             Compile compiler = new Compile();
             Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -63,9 +85,7 @@ namespace butters
                     }
                     catch (System.Exception e)
                     {
-                        Console.WriteLine("Something went wrong wile running");
-                        log(e.ToString());
-                        throw;
+                        throw new RuntimeException("Something went wrong whilst running!", e);
                     }
 
                     if (timed){

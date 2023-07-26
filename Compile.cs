@@ -67,7 +67,7 @@ namespace butters
         public code_block loopObj = new code_block();
         public bool inloop = false;
         bool dontadd = false;
-        public code_block codeSwitch(string[] split, string action){
+        public code_block codeSwitch(string[] split, string action, int line = -1){
             code_block c = new code_block();
             dontadd = false;
             switch (action)
@@ -81,7 +81,7 @@ namespace butters
                     c.var = split[1];
                     c.output = split[2];
                     return c;
-                case "cvar": 
+                case "cvar":
                     c.origin = "cvar";
                     c.instruction = "redef";
                     c.var = split[1];
@@ -109,15 +109,60 @@ namespace butters
                     c.runs = new List<code_block>();
                     loopObj = c;
                     return c;
+                case "else":
+                    if(!inloop){
+                        throw new CompileException("else cannot be used without if!");
+                    }
+                    string[] elseSplit = loopObj.condition.Split(" ");
+                    List<string> elseCond = new List<string>(elseSplit);
+                    c.instruction = "if";
+                    c.condition = "not " + string.Join(" ", elseCond);
+                    c.runs = new List<code_block>();
+                    loopObj = c;
+                    return c;
+                case "location":
+                    c.origin = "location";
+                    c.value = split[1];
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Program.log("[Compile.cs/codeswitch] found warp point " + split[1]);
+                    Console.ForegroundColor = ConsoleColor.White;
+                    c.instruction = "pin";
+                    return c;
+                case "warp":
+                    c.origin = "warp";
+                    c.value = split[1];
+                    c.instruction = "jump";
+                    if(Program.quiet){
+                        return c;
+                    }
+                    if(Program.warp_delay > 0){
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.WriteLine("[Compile.cs/codeSwitch] (compiler notice) You are using a warp with a warp delay of " + Program.warp_delay + ".");
+                        Console.WriteLine("[Compile.cs/codeSwitch] (compiler notice) To alter warp delay use the arguement --warp-delay [time(ms)]");
+                        Console.WriteLine("[Compile.cs/codeSwitch] (compiler notice) To scilence these warnings use the -q flag when compiling");
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }else{
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.WriteLine("[Compile.cs/codeSwitch] (compiler warning) You are using a warp with a warp delay of " + Program.warp_delay + ".");
+                        Console.WriteLine("[Compile.cs/codeSwitch] (compiler warning) This delay is very low. so you might get a cpu usage spike and/or a stack overflow warning.");
+                        Console.WriteLine("[Compile.cs/codeSwitch] (compiler warning) To scilence these warnings use the -q flag when compiling");
+                        Console.WriteLine("[Compile.cs/codeSwitch] (compiler warning) Continuing in 3000ms");
+                        Thread.Sleep(3000);
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                    return c;
+                case "return":
+                    c.instruction = "return";
+                    return c;
                 case "$":
                     List<string> newSplit = new List<string>(split);
-                    newSplit.Remove("$");
-                    c = codeSwitch(newSplit.ToArray(), newSplit[0]);
+                    newSplit.RemoveAt(0);
+                    c = codeSwitch(newSplit.ToArray(), newSplit[0], line);
                     if(inloop){
                         try
                         {
                             if(loopObj is null) { 
-                                throw new Exception("<internal> [Compile.cs/codeSwitch] loopObj is null!");
+                                throw new CompileException("<internal> [Compile.cs/codeSwitch] loopObj is null!");
                             }
                             loopObj.runs.Add(c);
                             dontadd = true;
@@ -136,14 +181,16 @@ namespace butters
                         
                     }else{
                         Console.WriteLine(c.instruction);
-                        throw new Exception("Not in loop!");
+                        throw new CompileException("Not in loop!");
                     }
                     
                 case "%":
                     inloop = false;
                     loopObj = new code_block();
-                    dontadd = true;
+                    dontadd = false;
                 break;
+                default:
+                    throw new CompileException("Invalid instruction!", new InvalidTokenException(action, new ButtersException("in line : " + (line + 2).ToString())));
             }
             return c;
         }
@@ -261,12 +308,30 @@ namespace butters
                         {
                             continue;
                         }
-                        code_block c = codeSwitch(split, action);
+                        code_block c = codeSwitch(split, action, i);
                         
                         if(!dontadd){
                             code.Add(c);
                         }
-                        
+
+                    break;
+                    case (SECTION)1:
+                        bool it = split[1] == "DYNAMIC";
+                        if(action == "#section"){
+                            continue;
+                        }
+                        if(action != "import"){
+                            throw new CompileException("invalid action for section: " + action);
+                        }
+                        if(!File.Exists(split[1] + ".btrs")){
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("make sure DYNAMIC imports are existing files ending with .btrs in the filename but just the filename without extension in code");
+                            Console.WriteLine("make sure STATIC imports are existing files ending with .dll in the filename but just the filename without extension in code");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            throw new CompileException("Import does not exist!");
+                        }
+                        Console.WriteLine(it);
+                        Console.WriteLine(File.Exists(split[1] + (it ? ".btrs" : ".dll")));
                     break;
                 }
             }

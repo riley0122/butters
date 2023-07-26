@@ -1,44 +1,69 @@
 {
-    "meta": {
-        "author": "[author]",
-        "project": "[project name]",
-        "version": "[version]",
-        "license": "[license]"
+  "meta": {
+    "author": "[author]",
+    "project": "[project name]",
+    "version": "[version]",
+    "license": "[license]"
+  },
+  "_static": ["[static file].dll", "[static file].dll"],
+  "_dynamic": ["[path to dynamic file].btrs", "[path to dynamic file].btrs"],
+  "define": [
+    { "name": "[variable name]", "value": "[value]", "type": "[type]" }
+  ],
+  "code": [
+    {
+      "instruction": "while",
+      "condition": "[condition]",
+      "runs": [
+        { "instruction": "[do something]" },
+        { "instruction": "[do something else]" }
+      ]
     },
-    "_static": ["[static file].dll", "[static file].dll"],
-    "_dynamic": ["[path to dynamic file].btrs", "[path to dynamic file].btrs"],
-    "define": [{"name": "[variable name]", "value": "[value]", "type": "[type]"}],
-    "code":[
+    {
+      "origin": "for",
+      "instruction": "while",
+      "condition": "![condition]",
+      "runs": [
+        { "instruction": "[do something]" },
         {
-            "instruction": "while",
-            "condition": "[condition]",
-            "runs": [{"instruction": "[do something]"}, {"instruction": "[do something else]"}]
-        },
-        {
-            "origin": "for",
-            "instruction": "while",
-            "condition": "![condition]",
-            "runs": [{"instruction": "[do something]"}, {"origin":"^[variable name]" ,"instruction": "incvar", "var": "[variable name]"}]
-        },
-        {
-            "origin": "cvar",
-            "instruction": "redef",
-            "var":"[variable name]",
-            "value": "[new value]"
-        },
-        {
-            "instruction": "input",
-            "var": "[variable name]",
-            "output": "[variable name]"
-        },
-        {
-            "instruction": "out",
-            "var": "[variable name]"
-        },
-        {
-            "instruction": "if",
-            "condition": "[condition]",
-            "runs": [{"instruction": "[do something]"}, {"instruction": "[do something else]"}]
+          "origin": "^[variable name]",
+          "instruction": "incvar",
+          "var": "[variable name]"
         }
-    ]
+      ]
+    },
+    {
+      "origin": "cvar",
+      "instruction": "redef",
+      "var": "[variable name]",
+      "value": "[new value]"
+    },
+    {
+      "instruction": "input",
+      "var": "[variable name]",
+      "output": "[variable name]"
+    },
+    {
+      "instruction": "out",
+      "var": "[variable name]"
+    },
+    {
+      "instruction": "if",
+      "condition": "[condition]",
+      "runs": [
+        { "instruction": "[do something]" },
+        { "instruction": "[do something else]" }
+      ]
+    },
+    {
+      "origin": "location",
+      "instruction": "pin",
+      "value": "[name]"
+    },
+    {
+      "origin": "warp",
+      "instruction": "jump",
+      "value": "[name]"
+    }
+  ]
 }

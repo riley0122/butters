@@ -60,13 +60,26 @@ namespace butters{
             }
         }
 
-        private void runcode(code_block[] code)
+
+        static List<string> pins = new List<string>();
+        static code_block[] top_level_code;
+        static bool istop = true;
+
+        private void runcode(code_block[] code, bool warping = false)
         {
+            if(istop){
+                istop = false;
+                top_level_code = code;
+            }
+            bool skipnextWarp = false;
             string str;
             string[] strs;
             string expression;
             foreach (code_block block in code)
             {
+                if(warping){
+                    System.Threading.Thread.Sleep(Program.warp_delay);
+                }
                 switch(block.instruction){
                     case "out":
                         str = getVar(block.var);
@@ -91,7 +104,7 @@ namespace butters{
                                     strs[i] = " ";
                                 }
                             }
-                            str = string.Join("", strs);
+                            str = string.Join(" ", strs);
                             bool isValidExpression = Regex.IsMatch(str, @"^\s*\d+(\s*[-+\/*]\s*\d+)*\s*$");
                             if(isValidExpression){
                                 var dataTable = new DataTable();
@@ -123,15 +136,60 @@ namespace butters{
                            expression = string.Join("", strs);
                         }
                     break;
+                    case "pin":
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                        Program.log("[runtime.cs/runcode] found warp point " + block.value);
+                        Console.ForegroundColor = ConsoleColor.White;
+                        pins.Add(block.value);
+                        string pinstring = "";
+                        foreach (string pin in pins)
+                        {
+                            pinstring += pin + ", ";
+                        }
+                        Program.log("[runtime.cs/runcode] all current pins: [" +  pinstring + "]");
+                    break;
+                    case "jump":
+                        if(skipnextWarp){
+                            continue;
+                        }
+                        if(!pins.Contains(block.value.Trim())){
+                            throw new InvalidWarpException("warp does not exist!", new InvalidTokenException(block.value));
+                        }
+                        bool passed = false;
+                        List<code_block> temp_code = new List<code_block>();
+                        foreach(code_block b in top_level_code){
+                            if(b.instruction == "pin" && b.value == block.value){
+                                passed = true;
+                                Program.log("[runtime.cs/runcode] passed pin " + b.value);
+                            }
+                            if(passed){
+                                temp_code.Add(b);
+                                Program.log("[runtime.cs/runcode] added code block with instruction ("  + b.instruction + ") to pin " + block.value);
+                            }else{
+                                Program.log("[runtime.cs/runcode] searching pin " + b.value + "...");
+                            }
+                        }
+                        runcode(temp_code.ToArray(), true);
+                    break;
+                    case "return":
+                        skipnextWarp = true;
+                        return;
                     case "if":
                         strs = block.condition.Split(" ");
                         for (int i = 0; i < strs.Length; i++)
                         {
                             if(strs[i].Substring(0, 1) == "_"){
-                                strs[i] = getVar(strs[i].Replace("_", ""));
+                                string varname = strs[i].Substring(1, strs[i].Length - 1);
+                                if(getRawVar(varname).type == VAR.VarType.STRING){
+                                    strs[i] = "'" + getVar(varname) + "'";
+                                }else{
+                                    strs[i] = getVar(varname);
+                                }
+
                             }
                         }
                         expression = string.Join(" ", strs);
+                        Program.log("[runtime.cs/runcode] evaluating: " + expression);
                         if (EvaluateBooleanExpression(expression))
                         {
                             runcode(block.runs.ToArray());
@@ -139,17 +197,23 @@ namespace butters{
                         }
                     break;
                     default:
-                        throw new Exception("not a valid instruction!");
+                        throw new InvalidTokenException(block.instruction, new ButtersException("invalid token"));
                 }
             }
         }
 
         private string getVar(string name){
             if(!isVar(name)){
-                Console.WriteLine("Not a variable!(" + name + ")");
-                return "";
+                throw new InvalidVariableException(name);
             }
             return vars.FirstOrDefault(x => x.name == name).value.ToString();
+        }
+
+        private VAR getRawVar(string name){
+            if(!isVar(name)){
+                throw new InvalidVariableException(name);
+            }
+            return vars.FirstOrDefault(var => var.name == name);
         }
 
         private bool isVar(string name){
@@ -158,8 +222,7 @@ namespace butters{
 
         private void setVar(dynamic val, string name){
             if(!isVar(name)){
-                Console.WriteLine("Not a variable! (" + name + ")");
-                return;
+                throw new InvalidVariableException(name);
             }
             vars.FirstOrDefault(x => x.name == name).value = val;
             return;
@@ -167,9 +230,13 @@ namespace butters{
 
         static bool EvaluateBooleanExpression(string expression)
         {
+            Program.log("[runtime.cs/EvaluateBooleanExpression] evaluating: " + expression);
+
             var dataTable = new System.Data.DataTable();
 
             var result = dataTable.Compute(expression, "");
+
+            Program.log("[runtime.cs/EvaluateBooleanExpression] evalution result: " + result.ToString());
 
             return result is bool && (bool)result == true;
         }

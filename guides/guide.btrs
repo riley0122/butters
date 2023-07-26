@@ -50,3 +50,7 @@ $out [string var with text] (writes to stdout)
 if [condition]
 $ [do the thing]
 %
+
+location [name]
+
+warp [name]
