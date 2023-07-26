@@ -120,6 +120,16 @@ namespace butters
                     c.runs = new List<code_block>();
                     loopObj = c;
                     return c;
+                case "location":
+                    c.origin = "location";
+                    c.value = split[1];
+                    c.instruction = "pin";
+                    return c;
+                case "warp":
+                    c.origin = "warp";
+                    c.value = split[1];
+                    c.instruction = "jump";
+                    return c;
                 case "$":
                     List<string> newSplit = new List<string>(split);
                     newSplit.RemoveAt(0);
