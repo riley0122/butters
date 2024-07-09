@@ -14,10 +14,9 @@ int reps 10
 int nth 0
 
 #section CODE
-for count < reps
+while _count < _reps
 $ out first
-$ cvar nth / first + second
-$ cvar first / second
-$ cvar second / nth
-^count
-%
+$ cvar nth / _first + _second
+$ cvar first / _second
+$ cvar second / _nth
+$ cvar count / _count + 1
