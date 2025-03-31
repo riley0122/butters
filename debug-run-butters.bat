@@ -1,1 +1,2 @@
-"\bin\Debug\net7.0\win-x64\butters lang.exe"
+@echo off
+"%~dp0\bin\Debug\net7.0\butters lang.exe"
