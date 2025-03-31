@@ -1,0 +1,6 @@
+#section META
+*author Riley0122
+*project test
+
+#section CODE
+out "Hello, World"
