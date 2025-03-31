@@ -6,7 +6,7 @@
 import greet
 
 #section DEFINE
-string bleh "Hello, World"
+string bleh Hello, World
 
 #section CODE
 cvar greetName / John
