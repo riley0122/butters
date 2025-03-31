@@ -1,0 +1,14 @@
+#section META
+*author Riley0122
+*project test
+
+#section DYNAMIC
+import greet
+
+#section DEFINE
+string bleh "Hello, World"
+
+#section CODE
+cvar greetName / John
+
+call greet

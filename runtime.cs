@@ -152,23 +152,20 @@ namespace butters{
                         if(skipnextWarp){
                             continue;
                         }
-                        if(!pins.Contains(block.value.Trim())){
-                            throw new InvalidWarpException("warp does not exist!", new InvalidTokenException(block.value));
-                        }
-                        bool passed = false;
                         List<code_block> temp_code = new List<code_block>();
                         foreach(code_block b in top_level_code){
-                            if(b.instruction == "pin" && b.value == block.value){
-                                passed = true;
-                                Program.log("[runtime.cs/runcode] passed pin " + b.value);
-                            }
-                            if(passed){
-                                temp_code.Add(b);
-                                Program.log("[runtime.cs/runcode] added code block with instruction ("  + b.instruction + ") to pin " + block.value);
-                            }else{
-                                Program.log("[runtime.cs/runcode] searching pin " + b.value + "...");
+                            if(b.instruction == "pin" && b.value == block.value) { 
+                                Program.log("[runtime.cs/runcode] Found pin " + b.value);
+                                temp_code = b.runs;
+                                break;
                             }
                         }
+
+                        if (temp_code.Count == 0)
+                        {
+                            throw new InvalidWarpException("warp is empty or does not exist!", new InvalidTokenException(block.value));
+                        }
+
                         runcode(temp_code.ToArray(), true);
                     break;
                     case "return":
@@ -196,6 +193,9 @@ namespace butters{
                             strs = block.condition.Split(" ");
                         }
                     break;
+                    case "noop":
+                        Program.log("[runtime.cs/runcode] Encountered no-op instruction.");
+                        break;
                     default:
                         throw new InvalidTokenException(block.instruction, new ButtersException("invalid token"));
                 }

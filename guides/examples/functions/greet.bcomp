@@ -1,0 +1,7 @@
+{
+  "meta": {"author":"Riley0122","project":"greet","version":"[Butters] NO VERSION INFO AVAILABLE"},
+  "_static": [],
+  "_dynamic": [],
+  "define": [{"name":"greetName","value":"","type":2},{"name":"output","value":"","type":2}],
+  "code": [{"instruction":"pin","origin":"function","value":"greet","runs":[{"instruction":"redef","var":"output","origin":"cvar","value":"Hello _greetName"},{"instruction":"out","var":"output"},{"instruction":"return"}]},{"instruction":"noop"}]
+}

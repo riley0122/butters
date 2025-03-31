@@ -1,0 +1,16 @@
+#section META
+*author Riley0122
+*project greet
+
+#section DEFINE
+string greetName
+
+string output
+
+#section CODE
+
+function greet
+$ cvar output / Hello _greetName
+$ out output
+$ return
+%

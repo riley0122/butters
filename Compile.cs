@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.Json;
+using System;
 
 namespace butters
 {
@@ -31,7 +32,7 @@ namespace butters
     }
 
     class code_block{
-        public string instruction { get ; set; } = "HALT";
+        public string instruction { get ; set; } = "noop";
         public string? var { get; set; }
         public string? origin { get; set; }
         public string? value { get; set; }
@@ -39,6 +40,12 @@ namespace butters
         public string? condition { get; set; } 
         public string? output { get; set; } 
     }
+
+    public class BcompImportFile
+    {
+        public JsonElement define { get; set; }
+        public JsonElement code { get; set; }
+    };
 
     class Compile
     {
@@ -120,16 +127,19 @@ namespace butters
                     c.runs = new List<code_block>();
                     loopObj = c;
                     return c;
-                case "location":
-                    c.origin = "location";
+                case "function":
+                    c.origin = "function";
                     c.value = split[1];
                     Console.ForegroundColor = ConsoleColor.Gray;
                     Program.log("[Compile.cs/codeswitch] found warp point " + split[1]);
                     Console.ForegroundColor = ConsoleColor.White;
                     c.instruction = "pin";
+                    inloop = true;
+                    c.runs = new List<code_block>();
+                    loopObj = c;
                     return c;
-                case "warp":
-                    c.origin = "warp";
+                case "call":
+                    c.origin = "call";
                     c.value = split[1];
                     c.instruction = "jump";
                     if(Program.quiet){
@@ -323,16 +333,37 @@ namespace butters
                         if(action != "import"){
                             throw new CompileException("invalid action for section: " + action);
                         }
-                        if(!File.Exists(split[1] + ".btrs")){
+                        string fileName = split[1] + ".btrs";
+                        if (!File.Exists(fileName)){
                             Console.ForegroundColor = ConsoleColor.Red;
                             Console.WriteLine("make sure DYNAMIC imports are existing files ending with .btrs in the filename but just the filename without extension in code");
                             Console.WriteLine("make sure STATIC imports are existing files ending with .dll in the filename but just the filename without extension in code");
                             Console.ForegroundColor = ConsoleColor.White;
                             throw new CompileException("Import does not exist!");
                         }
-                        Console.WriteLine(it);
-                        Console.WriteLine(File.Exists(split[1] + (it ? ".btrs" : ".dll")));
-                    break;
+                        
+                        // This is a very naive approach I think.
+
+                        Compile importCompiler = new Compile();
+                        importCompiler.comp(fileName);
+
+                        string compiledFileName = split[1] + ".bcomp";
+
+                        string compiledFile = File.ReadAllText(compiledFileName);
+                        BcompImportFile? data = JsonSerializer.Deserialize<BcompImportFile>(compiledFile);
+
+                        if (data == null)
+                        {
+                            throw new CompileException("No data found!");
+                        }
+
+                        List<VAR> importedVars = JsonSerializer.Deserialize<List<VAR>>(data.define.ToString()) ?? new List<VAR>();
+                        List<code_block> importedCode = JsonSerializer.Deserialize<List<code_block>>(data.code.ToString()) ?? new List<code_block>();
+
+                        vars.InsertRange(0, importedVars);
+                        code.InsertRange(0, importedCode);
+
+                        break;
                 }
             }
 
