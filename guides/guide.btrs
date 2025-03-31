@@ -51,6 +51,8 @@ if [condition]
 $ [do the thing]
 %
 
-location [name]
+function [name]
 
-warp [name]
+return
+
+call [name]
