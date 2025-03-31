@@ -67,7 +67,20 @@ like this (not all data is required):
 
 These are the import functions in Butters.
 
-! NOT IMPLEMENTED YET!
+Static imports are not yet implemented!
+
+Dynamic imports can be used like this:
+```butters
+#section DYNAMIC
+import greet
+```
+
+This will import the file `greet.btrs`.
+
+> **Note**
+> The imported file name must have the same file name as project name.
+> 
+> For example `greet.btrs` must have `*project greet` in the META section.
 
 ### DEFINE
 
